@@ -21,6 +21,7 @@ contract SocialMedia is AutomationCompatibleInterface {
 
     mapping(uint256 => mapping(address => bool)) public likes; //to maintain likes of all posts
 
+    mapping(address => bool) public userAddresses;
     address[] public users; // this array to be updated with the sign-up / sign-in feature.
     address[] public leaderboard; // this array to be updated by sorting the users by their scores.
 
@@ -36,8 +37,6 @@ contract SocialMedia is AutomationCompatibleInterface {
     mapping(address => uint256) public scores; // stores the scores of all users.
 
     address public owner; // stores the address of the owner of this contract.
-
-    bytes public leaderData;
 
     // variables for scores
     uint256 public newPostScore = 10;
@@ -114,9 +113,20 @@ contract SocialMedia is AutomationCompatibleInterface {
         users.push(_ad2);
         users.push(_ad3);
 
+        userAddresses[_ad1] = true;
+        userAddresses[_ad2] = true;
+        userAddresses[_ad3] = true;
+
         leaderboard.push(_ad1);
         leaderboard.push(_ad2);
         leaderboard.push(_ad3);
+    }
+
+    function addUser(address _add) public {
+        if (!userAddresses[_add]) {
+            users.push(_add);
+            userAddresses[_add] = true;
+        }
     }
 
     function createPost(string memory _content, string memory _imageURL)
@@ -201,8 +211,6 @@ contract SocialMedia is AutomationCompatibleInterface {
         if (!upkeepNeeded) {
             revert SocialMedia__UpkeepNotNeeded();
         }
-
-        leaderData = performData;
 
         // decode performData
         address[] memory leaders = abi.decode(performData, (address[]));
