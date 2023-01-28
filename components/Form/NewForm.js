@@ -97,14 +97,15 @@ export default function Form() {
 
       const contract = new ethers.Contract(
         process.env.NEXT_PUBLIC_ADDRESS,
-        desoContract.abi,
+        desoContract,
         signer
       );
 
       const desoData = await contract.createPost(form.story, pinataUrlString);
 
       const desoPostResult = await desoData.wait();
-      console.log("Deso Result--->", desoPostResult);
+
+      console.log("Post created!");
       setAddress(desoData.to);
       if (desoPostResult.to) {
         setLoading(false);

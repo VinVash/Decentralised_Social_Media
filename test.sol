@@ -390,6 +390,8 @@ contract SocialMedia is AutomationCompatibleInterface {
             leaderB[i].user = leaderboard[i];
             leaderB[i].score = scores[leaderboard[i]];
         }
+
+        return leaderB;
     }
 
     function getPostsByUser() internal view returns (Post[] storage) {

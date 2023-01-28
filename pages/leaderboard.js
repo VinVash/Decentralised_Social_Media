@@ -1,15 +1,10 @@
 import PeopleCard from "../components/layouts/components/PeopleCard";
-
-const Moralis = require("moralis").default;
-const { EvmChain } = require("@moralisweb3/common-evm-utils");
+import { ethers } from "ethers";
 
 import contractAddresses from "../constants/contractAddresses.json";
 import abi from "../constants/abi.json";
-import { useEffect, useState } from "react";
 
-Moralis.start({
-  apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-});
+import { useEffect, useState } from "react";
 
 function LayoutHeader({ children }) {
   return (
@@ -44,30 +39,24 @@ function LayoutHeader({ children }) {
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
 
-  const connectToWeb3 = async () => {
-    try {
-      const chain = EvmChain.MUMBAI;
-      const address = "0x7C582a184401C037112F84423d11451E18D58b6D";
+  const fetchLeaderboard = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
 
-      // token 0 address, e.g. WETH token address
-      const functionName = "getAllLeaderboard";
+    const contract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ADDRESS,
+      abi,
+      signer
+    );
 
-      const response = await Moralis.EvmApi.utils.runContractFunction({
-        abi,
-        functionName,
-        address,
-        chain,
-      });
-
-      console.log(response.toJSON());
-      setLeaders(response.toJSON());
-    } catch (error) {
-      console.log(error);
-    }
+    const leaderboardData = await contract.getAllLeaderboard();
+    const leaderboardDataReversed = [...leaderboardData];
+    leaderboardDataReversed.reverse();
+    setLeaders(leaderboardDataReversed);
   };
 
   useEffect(() => {
-    connectToWeb3();
+    fetchLeaderboard();
   }, []);
 
   return (
@@ -78,7 +67,12 @@ export default function Leaderboard() {
             leaders
               .slice(0, 3)
               .map((person, index) => (
-                <PeopleCard person={person} index={index} leaders={leaders} />
+                <PeopleCard
+                  person={person}
+                  index={index}
+                  leaders={leaders}
+                  key={index}
+                />
               ))}
         </div>
       </LayoutHeader>

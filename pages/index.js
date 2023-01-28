@@ -1,45 +1,34 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-const Moralis = require("moralis").default;
-const { EvmChain } = require("@moralisweb3/common-evm-utils");
-
 import contractAddresses from "../constants/contractAddresses.json";
-import abi from "../constants/abi.json";
-import PostCard from "../components/layouts/components/PostCard";
+import desoContract from "../artifacts/contracts/PostApp.sol/SocialMedia.json";
 
-Moralis.start({
-  apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-});
+import PostCard from "../components/layouts/components/PostCard";
 
 const Home = () => {
   const [chainId, setChainId] = useState("");
   const [account, setAccount] = useState(null);
   const [posts, setPosts] = useState([]);
 
-  const connectToWeb3 = async () => {
-    try {
-      const chain = EvmChain.MUMBAI;
-      const address = "0x7c582a184401c037112f84423d11451e18d58b6d";
-      // token 0 address, e.g. WETH token address
-      const functionName = "getAllPosts";
+  const getAllPosts = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
 
-      const response = await Moralis.EvmApi.utils.runContractFunction({
-        abi,
-        functionName,
-        address,
-        chain,
-      });
+    const contract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ADDRESS,
+      desoContract,
+      signer
+    );
 
-      setPosts(response.toJSON());
-      console.log(response.toJSON());
-    } catch (error) {
-      console.log(error);
-    }
+    const desoData = await contract.getAllPosts();
+    setPosts(desoData);
+
+    console.log(desoData);
   };
 
   useEffect(() => {
-    connectToWeb3();
+    getAllPosts();
   }, []);
 
   let contractAddress =
@@ -80,7 +69,7 @@ const Home = () => {
                     <div className="px-4 py-4" key={index}>
                       <PostCard
                         post={post}
-                        key={post.id}
+                        postId={post.id}
                         length={posts.length}
                       />
                     </div>
@@ -94,7 +83,7 @@ const Home = () => {
             >
               <svg
                 aria-hidden="true"
-                class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +97,7 @@ const Home = () => {
                   fill="currentFill"
                 />
               </svg>
-              <span class="sr-only">Loading...</span>
+              <span className="sr-only">Loading...</span>
             </div>
           )}
         </div>

@@ -1,12 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHeart,
+  faHeart as faHeartOutline,
   faComment,
   faTrashCan,
 } from "@fortawesome/free-regular-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-export default function PostCard({ post, key, length }) {
+import { faPen, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { ethers } from "ethers";
+import desoContract from "../../../artifacts/contracts/PostApp.sol/SocialMedia.json";
+
+export default function PostCard({ post, postId, length }) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  const [addr, setAddr] = useState(null);
+
+  const contract = new ethers.Contract(
+    process.env.NEXT_PUBLIC_ADDRESS,
+    desoContract,
+    signer
+  );
+
+  // set the address of signer in state.
+  const getAddressOfSigner = async () => {
+    let addr = await signer.getAddress();
+    setAddr(addr);
+  };
+
+  const likePost = async () => {
+    const desoData = await contract.likePost(post[1], post[0]);
+
+    const desoPostResult = await desoData.wait();
+  };
+
+  const calculateLikes = (likeAddresses) => {
+    let likeCount = 0;
+
+    likeAddresses
+      .filter((add) => add !== "0x0000000000000000000000000000000000000000")
+      .map((add) => likeCount++);
+    return likeCount;
+  };
+
+  useEffect(() => {
+    getAddressOfSigner();
+  }, [addr]);
+
   return (
     <div className="flex gap-4 items-center p-4 w-full">
       <img
@@ -34,12 +73,22 @@ export default function PostCard({ post, key, length }) {
         </div>
         <div className="flex justify-between text-sm">
           <div className="flex items-center gap-2">
-            <FontAwesomeIcon
-              icon={faHeart}
-              className="text-gray-600 hover:text-gray-200"
-            />
+            {post[7].includes(addr) ? (
+              <FontAwesomeIcon
+                icon={faHeart}
+                className="text-red-600 hover:text-red-300"
+                onClick={() => likePost()}
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={faHeartOutline}
+                className="text-red-600 hover:text-red-300"
+                onClick={() => likePost()}
+              />
+            )}
+
             <span className="text-sm leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
-              {post[7] ? post[7].length : 0}
+              {post[7] ? calculateLikes(post[7]) : 0}
             </span>
           </div>
           <div className="flex items-center gap-2">

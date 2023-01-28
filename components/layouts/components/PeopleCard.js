@@ -1,40 +1,28 @@
 import React from "react";
 import { faMedal } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-const Moralis = require("moralis").default;
-const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
-import contractAddresses from "../../../constants/contractAddresses.json";
 import abi from "../../../constants/abi.json";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ethers } from "ethers";
-
-// Moralis.start({
-//   apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-// });
 
 export default function PeopleCard({ person, index, leaders }) {
   const [score, setScore] = useState(null);
-  const [selectedPerson, setSelectedPerson] = useState(null);
 
-  const connectToWeb3 = async () => {
-    console.log(selectedPerson);
-    try {
-      const contract = new ethers.Contract(
-        "0x7C582a184401C037112F84423d11451E18D58b6D",
-        abi
-      );
-      const response = await contract.scores(selectedPerson);
-      setScore(response);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+  const getScore = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ADDRESS,
+      abi,
+      signer
+    );
+
+    const leaderScore = await contract.scores(person);
+
+    setScore(parseInt(leaderScore._hex).toString());
   };
-
-  useEffect(() => {
-    connectToWeb3();
-  }, [selectedPerson]);
 
   return (
     <div className="flex items-center justify-between py-6">
@@ -62,9 +50,9 @@ export default function PeopleCard({ person, index, leaders }) {
       </div>
       <div>
         <p
-          className="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50 transition-all duration-200"
+          className="cursor-pointer hover:bg-gray-100 inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm transition-all duration-200"
           onClick={() => {
-            setSelectedPerson(person);
+            getScore();
           }}
         >
           Score
