@@ -1,32 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+
+const Moralis = require("moralis").default;
+const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
 import contractAddresses from "../constants/contractAddresses.json";
 import abi from "../constants/abi.json";
 
+Moralis.start({
+  apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+});
+
 const Home = () => {
   const [chainId, setChainId] = useState("");
   const [account, setAccount] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   const connectToWeb3 = async () => {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-    const network = await provider.getNetwork();
-    setChainId(network.chainId);
+    try {
+      const chain = EvmChain.MUMBAI;
+      const address = "0x896D8Ee3962CDd31A95D9A0C1f91ba1b09Cf2626";
 
-    const signer = provider.getSigner();
-    const signerAddress = await signer.getAddress();
-    setAccount(signerAddress);
+      // token 0 address, e.g. WETH token address
+      const functionName = "getAllPosts";
+
+      const response = await Moralis.EvmApi.utils.runContractFunction({
+        abi,
+        functionName,
+        address,
+        chain,
+      });
+
+      console.log(response.toJSON());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  connectToWeb3();
+  useEffect(() => {
+    connectToWeb3();
+  }, []);
 
-  console.log(chainId);
+  let contractAddress =
+    chainId in contractAddresses ? contractAddresses[chainId][0] : null;
 
-  let contractAddressArray = contractAddresses[chainId];
-  console.log(contractAddressArray);
-
-  // const deso = new ethers.Contract(contractAddressArray[0], abi, account);
+  // console.log(contractAddress[0]); // error in this line. cannot access 0th index.
 
   return (
     <div className="flex bg-slate-900 justify-center">
