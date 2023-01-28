@@ -27,6 +27,8 @@ export default function Form() {
     });
   };
 
+  let filedata = new FormData();
+
   const startPost = async (e, pinataUrlString) => {
     e.preventDefault();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -48,10 +50,6 @@ export default function Form() {
 
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
     //we gather a local file from the API for this example, but you can gather the file from anywhere
-
-    let filedata = new FormData();
-
-    filedata.append("file", image);
 
     const result = await axios({
       method: "post",
@@ -201,6 +199,7 @@ export default function Form() {
               <button
                 type="submit"
                 onClick={(e) => {
+                  filedata.append("file", image);
                   startPost(e, pinataUrlString);
                 }}
                 style={{ fontSize: "12px", height: "30px" }}

@@ -1,16 +1,11 @@
-import styled from 'styled-components';
-import HeaderLogo from './components/HeaderLogo'
-import HeaderNav from './components/HeaderNav'
-import HeaderRight from './components/HeaderRight'
-import Navbar from './components/Navbar';
+import styled from "styled-components";
+import HeaderLogo from "./components/HeaderLogo";
+import HeaderNav from "./components/HeaderNav";
+import HeaderRight from "./components/HeaderRight";
+import Navbar from "./components/Navbar";
 
 const Header = () => {
-  return (
-  
-     
-      <Navbar/>
-    
-  )
+  return <Navbar />;
 };
 
 const HeaderWrapper = styled.div`
@@ -19,8 +14,10 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
- {/* <HeaderLogo />
+`;
+{
+  /* <HeaderLogo />
       <HeaderNav />
-      <HeaderRight /> */}
-export default Header
+      <HeaderRight /> */
+}
+export default Header;
