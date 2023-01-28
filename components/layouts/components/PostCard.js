@@ -30,9 +30,9 @@ export default function PostCard({ post, key, length }) {
           </div>
         </div>
         <div className="my-4">
-          <p className="text-sm leading-5 text-gray-300">{post[2]}</p>
+          <p className="text-sm leading-5 text-gray-700 italic">{post[2]}</p>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between text-sm">
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faHeart}

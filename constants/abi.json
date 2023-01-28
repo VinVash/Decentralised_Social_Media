@@ -540,6 +540,19 @@
   },
   {
     "inputs": [],
+    "name": "getAllLeaderboard",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getAllPosts",
     "outputs": [
       {
@@ -824,6 +837,19 @@
   {
     "inputs": [],
     "name": "newPostScore",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "numLeaderboard",
     "outputs": [
       {
         "internalType": "uint256",
