@@ -1,21 +1,20 @@
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { PlusIcon } from '@heroicons/react/20/solid'
-import Wallet from './Wallet'
-import { useRouter } from 'next/router'
-import { create } from 'domain'
-import Link from 'next/link'
+import { Fragment } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/20/solid";
+import Wallet from "./Wallet";
+import { useRouter } from "next/router";
+import { create } from "domain";
+import Link from "next/link";
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
-
-    const createPost = (e) => {
-        e.preventDefault()
-        router.push(href)
-      }
+  const createPost = (e) => {
+    e.preventDefault();
+    router.push(href);
+  };
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -61,7 +60,8 @@ export default function Navbar() {
                   >
                     followers
                   </Link>
-                  <Link passHref
+                  <Link
+                    passHref
                     href="/leaderboard"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                   >
@@ -73,18 +73,29 @@ export default function Navbar() {
                   >
                     Limelight
                   </a>
+                  <Link
+                    passHref
+                    href="/meet"
+                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  >
+                    Meet
+                  </Link>
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                    <Link passHref href={"/createPost"}><button 
-                    type="button"
-                    className="relative inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-                    <span>Create Post</span>
-                  </button> </Link>
-                  
+                  <Link passHref href={"/createPost"}>
+                    <button
+                      type="button"
+                      className="relative inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      <PlusIcon
+                        className="-ml-1 mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      <span>Create Post</span>
+                    </button>{" "}
+                  </Link>
                 </div>
                 <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
                   <button
@@ -96,7 +107,7 @@ export default function Navbar() {
                   </button>
 
                   {/* Profile dropdown */}
-                  <Wallet/>
+                  <Wallet />
                   {/* <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -207,8 +218,12 @@ export default function Navbar() {
                   />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">Tom Cook</div>
-                  <div className="text-sm font-medium text-gray-500">tom@example.com</div>
+                  <div className="text-base font-medium text-gray-800">
+                    Tom Cook
+                  </div>
+                  <div className="text-sm font-medium text-gray-500">
+                    tom@example.com
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -246,5 +261,5 @@ export default function Navbar() {
         </>
       )}
     </Disclosure>
-  )
+  );
 }
