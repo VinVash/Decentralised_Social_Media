@@ -7,6 +7,7 @@ import desoContract from "../../artifacts/contracts/PostApp.sol/SocialMedia.json
 let pinataUrlString = "";
 const axios = require("axios");
 const FormState = createContext();
+import FormData from "form-data";
 
 export default function Form() {
   const [form, setForm] = useState({
@@ -23,7 +24,7 @@ export default function Form() {
   const FormHandler = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      story: e.target.value,
     });
   };
 
@@ -37,16 +38,6 @@ export default function Form() {
 
     setUploadLoading(true);
     console.log(form);
-
-    if (form.story !== "") {
-      try {
-        let encodedString = Buffer.from(form.story, "utf8");
-        setStoryUrl(encodedString.toString("base64"));
-        console.log("caption -->" + encodedString.toString("base64"));
-      } catch (error) {
-        toast.warn(`Error Uploading Title`);
-      }
-    }
 
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
     //we gather a local file from the API for this example, but you can gather the file from anywhere
@@ -67,71 +58,61 @@ export default function Form() {
     pinataUrlString = `https://gateway.pinata.cloud/ipfs/${IPFSHASH}`;
 
     setUploadLoading(false);
-    setUploaded(true);
-    if (setUploaded) {
-      const textToIpfsUrl = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
-      let textToIpfsJson = {
-        pinataOptions: {
-          cidVersion: 1,
+    const textToIpfsUrl = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
+    let textToIpfsJson = {
+      pinataOptions: {
+        cidVersion: 1,
+      },
+      pinataMetadata: {
+        name: "",
+      },
+      pinataContent: {},
+    };
+
+    if (storyUrl != "" && storyUrl != undefined) {
+      let address = await signer.getAddress();
+      textToIpfsJson.pinataMetadata.name = address + "_caption";
+      textToIpfsJson.pinataContent[`${address}`] = storyUrl;
+
+      const result = await axios({
+        method: "post",
+        url: textToIpfsUrl,
+        data: textToIpfsJson,
+        headers: {
+          "Content-Type": `application/json`,
+          pinata_api_key: `${process.env.NEXT_PUBLIC_IPFS_ID}`,
+          pinata_secret_api_key: `${process.env.NEXT_PUBLIC_IPFS_KEY}`,
         },
-        pinataMetadata: {
-          name: "",
-        },
-        pinataContent: {},
-      };
+      });
 
-      if (storyUrl != "" && storyUrl != undefined) {
-        let address = await signer.getAddress();
-        textToIpfsJson.pinataMetadata.name = address + "_caption";
-        textToIpfsJson.pinataContent[`${address}`] = storyUrl;
-
-        const result = await axios({
-          method: "post",
-          url: textToIpfsUrl,
-          data: textToIpfsJson,
-          headers: {
-            "Content-Type": `application/json`,
-            pinata_api_key: `${process.env.NEXT_PUBLIC_IPFS_ID}`,
-            pinata_secret_api_key: `${process.env.NEXT_PUBLIC_IPFS_KEY}`,
-          },
-        });
-
-        console.log("Result for text Upload", JSON.stringify(result));
-        let IPFSHASH = result.data.IpfsHash;
-        pinataUrlString = `https://gateway.pinata.cloud/ipfs/${IPFSHASH}`;
-      }
-
-      if (form.story === "") {
-        toast.warn("Story Field Is Empty");
-      } else if (uploaded == false) {
-        toast.warn("Files Upload Required");
-      } else {
-        setLoading(true);
-
-        const contract = new ethers.Contract(
-          process.env.NEXT_PUBLIC_ADDRESS,
-          desoContract.abi,
-          signer
-        );
-
-        const desoData = await contract.createPost(
-          captionUrlString,
-          pinataUrlString
-        );
-
-        const desoPostResult = await desoData.wait();
-        console.log("Deso Result--->", desoPostResult);
-        setAddress(desoData.to);
-        if (desoPostResult.to) {
-          setLoading(false);
-          toast.success("Post created Successfully!");
-          Router.push("/");
-        }
-      }
-      return false;
-    } else {
-      toast.warn("Unable to upload this file");
+      console.log("Result for text Upload", JSON.stringify(result));
+      let IPFSHASH = result.data.IpfsHash;
+      pinataUrlString = `https://gateway.pinata.cloud/ipfs/${IPFSHASH}`;
     }
+
+    if (form.story === "") {
+      toast.warn("Story Field Is Empty");
+    } else {
+      setLoading(true);
+
+      const contract = new ethers.Contract(
+        process.env.NEXT_PUBLIC_ADDRESS,
+        desoContract.abi,
+        signer
+      );
+
+      const desoData = await contract.createPost(form.story, pinataUrlString);
+
+      const desoPostResult = await desoData.wait();
+      console.log("Deso Result--->", desoPostResult);
+      setAddress(desoData.to);
+      if (desoPostResult.to) {
+        setLoading(false);
+        toast.success("Post created Successfully!");
+        Router.push("/");
+      }
+    }
+    return false;
   };
 
   return (
