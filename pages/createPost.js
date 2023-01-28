@@ -15,7 +15,7 @@ function LayoutHeader({ children }) {
               role="presentation"
             />
             <span className="flex-none block mx-4 px-4 py-2.5 leading-none font-medium uppercase bg-black text-white tracking-widest">
-              Leaderboard
+              Create Post
             </span>
             <span
               className="flex-grow block border-t border-black"

@@ -1,3 +1,13 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { video } from "@fortawesome/free-regular-svg-icons";
+import {
+  faMicrophone,
+  faMicrophoneSlash,
+  faVideo,
+  faVideoSlash,
+  faRightToBracket,
+} from "@fortawesome/free-solid-svg-icons";
+
 import { getHuddleClient } from "@huddle01/huddle01-client";
 
 import { useHuddleStore } from "@huddle01/huddle01-client/store";
@@ -69,46 +79,86 @@ export default function Meet() {
       <LayoutHeader>
         <div className="flex">
           <div className="md:flex-2 sm:flex-1"> </div>
-          <div className="md:flex-2 sm:flex-3">
+          <div className="md:flex-2 sm:flex-3" style={{ width: "100%" }}>
             <div>
               <div className="mt-6 flex-1  flow-root">
-                <h2 className={`text-${!roomState.joined ? "red" : "green"}`}>
+                <h2
+                  className={`text-${
+                    !roomState.joined ? "red" : "green"
+                  } text-center`}
+                >
                   Room Joined:&nbsp;{roomState.joined.toString()}
                 </h2>
 
-                <button onClick={handleJoin}>Join Room</button>
+                <div className="flex flex-row justify-between mt-4">
+                  <input
+                    type="text"
+                    onChange={(e) => setRoomId(e.target.value)}
+                    placeholder="Enter Room ID"
+                    className="p-2 border-2"
+                  ></input>
 
-                <input
-                  type="text"
-                  onChange={(e) => setRoomId(e.target.value)}
-                  placeholder="Enter Room ID"
-                ></input>
-                <button onClick={() => huddleClient.enableWebcam()}>
-                  Enable Webcam
-                </button>
-                <button onClick={() => huddleClient.disableWebcam()}>
-                  Disable Webcam
-                </button>
-                <button
-                  onClick={() => huddleClient.allowAllLobbyPeersToJoinRoom()}
-                >
-                  allowAllLobbyPeersToJoinRoom()
-                </button>
-                <button
-                  onClick={() =>
-                    // will not work in localhost
-                    huddleClient.startRecording({
-                      sourceUrl: window.location.href,
-                    })
-                  }
-                >
-                  startRecording()
-                </button>
-                <button
-                  onClick={() => huddleClient.stopRecording({ ipfs: true })}
-                >
-                  stopRecording()
-                </button>
+                  <button
+                    onClick={handleJoin}
+                    className="text-white bg-gray-300 px-6 py-2"
+                  >
+                    <FontAwesomeIcon
+                      icon={faRightToBracket}
+                      className="text-gray-600 hover:text-gray-400"
+                    />
+                  </button>
+                </div>
+
+                <div className="flex flex-row justify-between mt-4">
+                  <button
+                    onClick={() => huddleClient.enableWebcam()}
+                    className="text-white bg-gray-300 px-6 py-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={faVideo}
+                      className="text-gray-600 hover:text-gray-400"
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => huddleClient.disableWebcam()}
+                    className="text-white bg-gray-300 px-6 py-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={faVideoSlash}
+                      className="text-gray-600 hover:text-gray-400"
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => huddleClient.unmuteMic()}
+                    className="bg-gray-300 text-white px-6 py-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={faMicrophone}
+                      className="text-gray-600 hover:text-gray-400"
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => huddleClient.muteMic()}
+                    className="bg-gray-300 text-white px-6 py-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={faMicrophoneSlash}
+                      className="text-gray-600 hover:text-gray-400"
+                    />
+                  </button>
+                </div>
+
+                <div className="mt-4 flex flex-row justify-around">
+                  <button
+                    onClick={() => huddleClient.allowAllLobbyPeersToJoinRoom()}
+                    className="bg-black text-white p-2"
+                  >
+                    allowAllLobbyPeersToJoinRoom()
+                  </button>
+                </div>
 
                 {domLoaded && <MeVideoElem />}
 
