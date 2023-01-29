@@ -21,7 +21,7 @@ export default function PostCard({ post, postId, length }) {
   const router = useRouter();
 
   const [addr, setAddr] = useState(null);
-  const [commnetsOpenId, setCommentsOpenId] = useState(null);
+  const [commentsOpenId, setCommentsOpenId] = useState(null);
   const [comment, setComment] = useState("");
 
   const contract = new ethers.Contract(
@@ -88,14 +88,16 @@ export default function PostCard({ post, postId, length }) {
             {post[1].slice(0, 4)}...{post[1].slice(-4)}
           </p>
           <div>
-            <span className="text-sm leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
+            <span className="text-xs leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
               {new Date(post[3] * 1000).toString().slice(4, 15)},{" "}
               {new Date(post[3] * 1000).toString().slice(16, 21)} IST
             </span>
           </div>
         </div>
         <div className="mt-2 mb-4">
-          <p className="text-sm leading-5 text-gray-700 italic">{post[2]}</p>
+          <pre className="text-sm font-sans whitespace-pre-wrap leading-5 text-gray-700 italic">
+            {post[2]}
+          </pre>
         </div>
         <img
           className="inline-block"
@@ -105,7 +107,7 @@ export default function PostCard({ post, postId, length }) {
           }
           // alt="Profile Pic"
         />
-        <div className="flex justify-between text-sm mt-4">
+        <div className="flex justify-between mt-4">
           <div className="flex items-center gap-2">
             {post[7].includes(addr) ? (
               <FontAwesomeIcon
@@ -121,7 +123,7 @@ export default function PostCard({ post, postId, length }) {
               />
             )}
 
-            <span className="text-sm leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
+            <span className="leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
               {post[7] ? calculateLikes(post[7]) : 0}
             </span>
           </div>
@@ -140,7 +142,7 @@ export default function PostCard({ post, postId, length }) {
               icon={faComment}
               className="text-gray-600 hover:text-gray-200"
             />
-            <span className="text-sm leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
+            <span className="leading-5 text-gray-600 group-hover:text-gray-300 transition ease-in-out duration-150">
               {post[8] ? post[8].length : 0}
             </span>
           </div>
@@ -152,7 +154,7 @@ export default function PostCard({ post, postId, length }) {
             />
           </div>
         </div>
-        {commnetsOpenId === postId && (
+        {commentsOpenId === postId && (
           <div className="mt-4">
             <div className="flex items-center gap-2">
               <input
@@ -169,6 +171,22 @@ export default function PostCard({ post, postId, length }) {
               >
                 Post
               </button>
+            </div>
+            <div className="flex flex-col gap-4 mt-4">
+              <p className="text-gray-600 font-medium -mb-2">
+                Recent Comments{" "}
+              </p>
+              {post[9] &&
+                post[9].map((comment, index) => (
+                  <div key={index} className="flex flex-col gap-1">
+                    <p className="text-xs text-gray-700 italic">
+                      {post[8][index].slice(0, 4)}...{post[8][index].slice(-4)}
+                    </p>
+                    <p className="text-sm text-gray-600 bg-gray-200 py-1 px-4 rounded-md">
+                      {comment}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
         )}

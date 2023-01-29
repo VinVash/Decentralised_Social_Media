@@ -42,8 +42,8 @@ export default function PeopleCard({ person, index, leaders }) {
         <div className="flex flex-col gap-1">
           <p className="truncate text-sm font-medium text-gray-900">{person}</p>
           {score && (
-            <p className="truncate text-sm font-medium text-gray-900">
-              {score}
+            <p className="truncate text-sm italic text-gray-900">
+              Score: {score}
             </p>
           )}
         </div>
@@ -55,7 +55,7 @@ export default function PeopleCard({ person, index, leaders }) {
             getScore();
           }}
         >
-          Score
+          View Score
         </p>
       </div>
     </div>

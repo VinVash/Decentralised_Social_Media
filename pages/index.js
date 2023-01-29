@@ -61,6 +61,7 @@ const Home = () => {
                   (post) =>
                     post[1] !== "0x0000000000000000000000000000000000000000"
                 )
+                .reverse()
                 .map((post, index) => {
                   return (
                     <div className="px-4 py-4" key={index}>
