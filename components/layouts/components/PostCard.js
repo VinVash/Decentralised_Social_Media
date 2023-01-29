@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as faHeartOutline,
@@ -12,6 +13,7 @@ import desoContract from "../../../artifacts/contracts/PostApp.sol/SocialMedia.j
 export default function PostCard({ post, postId, length }) {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
+  const router = useRouter();
 
   const [addr, setAddr] = useState(null);
 
@@ -31,6 +33,23 @@ export default function PostCard({ post, postId, length }) {
     const desoData = await contract.likePost(post[1], post[0]);
 
     const desoPostResult = await desoData.wait();
+  };
+
+  const editPost = async () => {
+    router.push(`/editPost?postId=${postId}`);
+  };
+
+  const deletePost = async () => {
+    try {
+      const desoData = await contract.deletePost(post[0]); // passing the postId.
+
+      const desoPostResult = await desoData.wait();
+      window.location.reload();
+    } catch (error) {
+      if (error.message.includes("cannot estimate gas")) {
+        alert("A post can only be deleted by its author!");
+      }
+    }
   };
 
   const calculateLikes = (likeAddresses) => {
@@ -76,13 +95,13 @@ export default function PostCard({ post, postId, length }) {
             {post[7].includes(addr) ? (
               <FontAwesomeIcon
                 icon={faHeart}
-                className="text-red-600 hover:text-red-300"
+                className="text-red-600 hover:text-red-300 cursor-pointer"
                 onClick={() => likePost()}
               />
             ) : (
               <FontAwesomeIcon
                 icon={faHeartOutline}
-                className="text-red-600 hover:text-red-300"
+                className="text-red-600 hover:text-red-300 cursor-pointer"
                 onClick={() => likePost()}
               />
             )}
@@ -94,7 +113,8 @@ export default function PostCard({ post, postId, length }) {
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faPen}
-              className="text-gray-600 hover:text-gray-200"
+              className="text-gray-600 hover:text-gray-200 cursor-pointer"
+              onClick={() => editPost()}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -109,7 +129,8 @@ export default function PostCard({ post, postId, length }) {
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faTrashCan}
-              className="text-gray-600 hover:text-gray-200"
+              className="text-gray-600 hover:text-gray-200 cursor-pointer"
+              onClick={() => deletePost()}
             />
           </div>
         </div>

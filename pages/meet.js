@@ -156,7 +156,7 @@ export default function Meet() {
                     onClick={() => huddleClient.allowAllLobbyPeersToJoinRoom()}
                     className="bg-black text-white p-2"
                   >
-                    allowAllLobbyPeersToJoinRoom()
+                    Allow All Lobby Peers to Join Room
                   </button>
                 </div>
 
