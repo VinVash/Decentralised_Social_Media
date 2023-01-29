@@ -31,9 +31,6 @@ const Home = () => {
     getAllPosts();
   }, []);
 
-  let contractAddress =
-    chainId in contractAddresses ? contractAddresses[chainId][0] : null;
-
   // console.log(contractAddress[0]); // error in this line. cannot access 0th index.
 
   return (

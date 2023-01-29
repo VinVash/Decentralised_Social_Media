@@ -6,7 +6,12 @@ import {
   faComment,
   faTrashCan,
 } from "@fortawesome/free-regular-svg-icons";
-import { faPen, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faHeart,
+  faSmile,
+  faImage,
+} from "@fortawesome/free-solid-svg-icons";
 import { ethers } from "ethers";
 import desoContract from "../../../artifacts/contracts/PostApp.sol/SocialMedia.json";
 
@@ -16,6 +21,8 @@ export default function PostCard({ post, postId, length }) {
   const router = useRouter();
 
   const [addr, setAddr] = useState(null);
+  const [commnetsOpenId, setCommentsOpenId] = useState(null);
+  const [comment, setComment] = useState("");
 
   const contract = new ethers.Contract(
     process.env.NEXT_PUBLIC_ADDRESS,
@@ -33,6 +40,14 @@ export default function PostCard({ post, postId, length }) {
     const desoData = await contract.likePost(post[1], post[0]);
 
     const desoPostResult = await desoData.wait();
+  };
+
+  const commentOnPost = async () => {
+    const desoData = await contract.commentOnPost(post[1], post[0], comment);
+
+    const desoPostResult = await desoData.wait();
+    setComment("");
+    setCommentsOpenId(null);
   };
 
   const editPost = async () => {
@@ -66,15 +81,7 @@ export default function PostCard({ post, postId, length }) {
   }, [addr]);
 
   return (
-    <div className="flex gap-4 items-center p-4 w-full">
-      <img
-        className="inline-block h-10 w-10 rounded-full"
-        src={
-          post[6] ||
-          "https://pbs.twimg.com/profile_images/1121328878142853120/e-rpjoJi_bigger.png"
-        }
-        // alt="Profile Pic"
-      />
+    <div className="py-8">
       <div className="w-full">
         <div className="flex justify-between item-center">
           <p className="text-base font-medium text-[#191819]">
@@ -87,10 +94,18 @@ export default function PostCard({ post, postId, length }) {
             </span>
           </div>
         </div>
-        <div className="my-4">
+        <div className="mt-2 mb-4">
           <p className="text-sm leading-5 text-gray-700 italic">{post[2]}</p>
         </div>
-        <div className="flex justify-between text-sm">
+        <img
+          className="inline-block"
+          src={
+            post[6] ||
+            "https://pbs.twimg.com/profile_images/1121328878142853120/e-rpjoJi_bigger.png"
+          }
+          // alt="Profile Pic"
+        />
+        <div className="flex justify-between text-sm mt-4">
           <div className="flex items-center gap-2">
             {post[7].includes(addr) ? (
               <FontAwesomeIcon
@@ -117,7 +132,10 @@ export default function PostCard({ post, postId, length }) {
               onClick={() => editPost()}
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-2"
+            onClick={() => setCommentsOpenId(postId)}
+          >
             <FontAwesomeIcon
               icon={faComment}
               className="text-gray-600 hover:text-gray-200"
@@ -134,6 +152,26 @@ export default function PostCard({ post, postId, length }) {
             />
           </div>
         </div>
+        {commnetsOpenId === postId && (
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-sm"
+                placeholder="Add a comment..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+
+              <button
+                className="bg-blue-500 text-white px-3 py-2 rounded-md"
+                onClick={() => commentOnPost()}
+              >
+                Post
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
