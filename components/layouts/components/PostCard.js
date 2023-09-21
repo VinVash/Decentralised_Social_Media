@@ -5,6 +5,7 @@ import {
   faHeart as faHeartOutline,
   faComment,
   faTrashCan,
+  faEyeSlash,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faPen,
@@ -67,6 +68,19 @@ export default function PostCard({ post, postId, length }) {
     }
   };
 
+  const censorPost = async () => {
+    try {
+      const desoData = await contract.censorPost(post[1], post[0]); // passing postAuthor, postId.
+
+      const censorResult = await desoData.wait();
+      window.location.reload();
+    } catch (error) {
+      if (error.message.includes("cannot estimate gas")) {
+        alert("A post can only be censored by a moderator!");
+      }
+    }
+  }
+
   const calculateLikes = (likeAddresses) => {
     let likeCount = 0;
 
@@ -108,6 +122,8 @@ export default function PostCard({ post, postId, length }) {
           // alt="Profile Pic"
         />
         <div className="flex justify-between mt-4">
+
+        {/* Like Post*/}
           <div className="flex items-center gap-2">
             {post[7].includes(addr) ? (
               <FontAwesomeIcon
@@ -127,6 +143,8 @@ export default function PostCard({ post, postId, length }) {
               {post[7] ? calculateLikes(post[7]) : 0}
             </span>
           </div>
+
+          {/* Edit Post*/}
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faPen}
@@ -134,6 +152,8 @@ export default function PostCard({ post, postId, length }) {
               onClick={() => editPost()}
             />
           </div>
+
+          {/* Comment on Post*/}
           <div
             className="flex items-center gap-2"
             onClick={() => setCommentsOpenId(postId)}
@@ -146,6 +166,8 @@ export default function PostCard({ post, postId, length }) {
               {post[8] ? post[8].length : 0}
             </span>
           </div>
+
+          {/* Delete Post*/}
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faTrashCan}
@@ -153,6 +175,17 @@ export default function PostCard({ post, postId, length }) {
               onClick={() => deletePost()}
             />
           </div>
+
+          {/* Censor Post*/}
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon
+              icon={faEyeSlash}
+              className="text-gray-600 hover:text-gray-200 cursor-pointer"
+              onClick={() => censorPost()}
+            />
+          </div>
+
+
         </div>
         {commentsOpenId === postId && (
           <div className="mt-4">

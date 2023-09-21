@@ -63,16 +63,19 @@ const Home = () => {
                 )
                 .reverse()
                 .map((post, index) => {
-                  return (
-                    <div className="px-4 py-4" key={index}>
-                      <PostCard
-                        post={post}
-                        postId={post.id}
-                        length={posts.length}
-                      />
-                    </div>
-                  );
-                })}
+                  console.log(post.isCensored)
+                  if(!post.isCensored) {
+                    return (
+                      <div className="px-4 py-4" key={index}>
+                        <PostCard
+                          post={post}
+                          postId={post.id}
+                          length={posts.length}
+                        />
+                      </div>
+                    );
+                  }}
+                )}
             </div>
           ) : (
             <div
