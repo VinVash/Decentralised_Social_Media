@@ -2,7 +2,7 @@ For using the dapp, click on this link:
 
 https://decentralised-social-media.on.fleek.co/
 
-Firstly, you need to connect your wallet by clicking on the Connect Wallet button on the top right hand side, shift to the Polygon Mumbai testnet as mentioned in the transaction, then reload the page.
+Firstly, you need to connect your wallet by an automatic pop-up when you first load the website. It will also request you to change your network to the Polygon Mumbai testnet.
 
 Then you can use the full-fledged dapp.
 
