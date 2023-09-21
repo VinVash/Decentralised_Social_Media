@@ -7,31 +7,71 @@ import desoContract from "../artifacts/contracts/PostApp.sol/SocialMedia.json";
 import PostCard from "../components/layouts/components/PostCard";
 
 const Home = () => {
+
   const [chainId, setChainId] = useState("");
-  const [account, setAccount] = useState(null);
   const [posts, setPosts] = useState([]);
 
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState(null);
+
+  const connectToMetaMask = async () => {
+
+    if (window.ethereum) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signerInstance = web3Provider.getSigner();
+      const contractInstance = new ethers.Contract(
+        process.env.NEXT_PUBLIC_ADDRESS,
+        desoContract,
+        signerInstance
+      );
+
+      setProvider(web3Provider);
+      setSigner(signerInstance);
+      setContract(contractInstance);
+
+      try {
+        // Request account access
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setCurrentAccount(accounts[0]);
+        setIsConnected(true);
+      } catch (error) {
+        console.error("User rejected the connect request");
+      }
+
+      // Subscribe to accounts change
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setCurrentAccount(accounts[0]);
+      });
+    } else {
+      console.log("No web3? You should consider trying MetaMask!");
+    }
+  };
+
+
   const getAllPosts = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
 
-    const contract = new ethers.Contract(
-      process.env.NEXT_PUBLIC_ADDRESS,
-      desoContract,
-      signer
-    );
+    try {
+      const allPosts = await contract.getAllPosts()
+      console.log("All posts: ", allPosts)
+      setPosts(allPosts)
+    } catch (e) {
+      console.log("error in fetching all posts")
+      console.log(e)
+    }
 
-    const desoData = await contract.getAllPosts();
-    setPosts(desoData);
-
-    console.log(desoData);
   };
 
   useEffect(() => {
-    getAllPosts();
-  }, []);
-
-  // console.log(contractAddress[0]); // error in this line. cannot access 0th index.
+    if(currentAccount === null) {
+      connectToMetaMask()
+    }
+    if(currentAccount !== null) {
+      getAllPosts()
+    }
+  }, [currentAccount]);
 
   return (
     <>
@@ -63,7 +103,6 @@ const Home = () => {
                 )
                 .reverse()
                 .map((post, index) => {
-                  console.log(post.isCensored)
                   if(!post.isCensored) {
                     return (
                       <div className="px-4 py-4" key={index}>

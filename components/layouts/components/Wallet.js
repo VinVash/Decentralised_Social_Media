@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { ethers } from "ethers";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import desoContract from "../../../artifacts/contracts/PostApp.sol/SocialMedia.json";
 
 const networks = {
   polygon: {
@@ -20,7 +21,7 @@ const networks = {
 
 const Wallet = () => {
   const [address, setAddress] = useState("");
-  const [balance, setBalance] = useState("");
+  const [signer, setSigner] = useState(null);
 
   const connectWallet = async () => {
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -36,20 +37,19 @@ const Wallet = () => {
       });
     }
 
-    // There is only ever up to one account in MetaMask exposed
-    const account = provider.getSigner();
-    // Get public address of the signer
-    const Address = await account.getAddress();
-    // Set address in useState
-    setAddress(Address);
-    //get matic balance from the wallet for the account
-    const Balance = ethers.utils.formatEther(await account.getBalance());
-    //set balance for the use State
-    setBalance(Balance);
+    // Subscribe to accounts change
+    window.ethereum.on('accountsChanged', (accounts) => {
+      setAddress(accounts[0]);
+    });
+
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    setAddress(accounts[0]);
   };
 
-  // show public address and wallet balance on connecting with the metamask
-  // mask unnecessary credentials from the balance and public address
+  useEffect(() => {
+    connectWallet()
+  }, [])
+
   return (
     <>
       {address == "" ? (
@@ -72,7 +72,7 @@ const Wallet = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                {address.slice(0, 6)}...{address.slice(39)}
+                {address !== undefined ? `${address.slice(0, 6)}...${address.slice(39)}` : ""}
               </p>
               <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                 View profile
@@ -109,14 +109,6 @@ const Address = styled.h2`
   justify-content: center;
   padding: 0 5px 0 5px;
   border-radius: 10px;
-`;
-
-const Balance = styled.h2`
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  margin-right: 5px;
 `;
 
 export default Wallet;
