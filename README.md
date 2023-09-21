@@ -1,6 +1,6 @@
 For using the dapp, click on this link:
 
-http://restless-glade-8589.on.fleek.co/
+https://decentralised-social-media.on.fleek.co/
 
 Firstly, you need to connect your wallet by clicking on the Connect Wallet button on the top right hand side, shift to the Polygon Mumbai testnet as mentioned in the transaction, then reload the page.
 
